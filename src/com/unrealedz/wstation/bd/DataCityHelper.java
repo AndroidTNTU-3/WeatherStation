@@ -9,6 +9,7 @@ import com.unrealedz.wstation.entity.ForecastDay;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -57,6 +58,11 @@ public class DataCityHelper {
         values.put(DbHelper.CITY_DB_COUNTRY_ID, cityDB.getCountryID());
         return values;
     }
+    
+	 public Cursor getCursor(String tableName) {	    	
+	    	Cursor cursor = db.query(tableName, null, null, null, null, null, null);
+	        return cursor;
+	    }
     
 	public void cleanOldRecords() {
         db.delete(DbHelper.CITY_DB_TABLE, null, null);

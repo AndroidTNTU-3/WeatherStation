@@ -11,10 +11,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.unrealedz.wstation.bd.DataCityDbInfoHelper;
 import com.unrealedz.wstation.bd.DataCityHelper;
 import com.unrealedz.wstation.bd.DataDayHelper;
 import com.unrealedz.wstation.bd.DataHelper;
 import com.unrealedz.wstation.bd.DataWeekHelper;
+import com.unrealedz.wstation.bd.DbHelper;
 import com.unrealedz.wstation.entity.CitiesDB;
 import com.unrealedz.wstation.entity.CityDB;
 import com.unrealedz.wstation.entity.Forecast;
@@ -23,6 +25,7 @@ import com.unrealedz.wstation.parsers.WeatherParser;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -34,6 +37,8 @@ public class NetworkLoader extends AsyncTask<String, Void, Object> {
 	Object ob;
 	
 	Context context;
+	
+
 		
 	public static interface LoaderCallBack{
 		public void setLocationInfo();
@@ -127,11 +132,35 @@ public class NetworkLoader extends AsyncTask<String, Void, Object> {
       	}           
 
       } else if(result instanceof CitiesDB){
-		
+    	  
+    	  DataCityDbInfoHelper dbInfoHelper = new DataCityDbInfoHelper(context);
     	  DataCityHelper dataCity = new DataCityHelper(context);
-    	  dataCity.cleanOldRecords();
-    	  dataCity.insertCitiesDB((CitiesDB)result);
+    	  Cursor cursor = dbInfoHelper.getCursor(DbHelper.CITY_DB_INFO_TABLE);
+    	  
+    	  if (cursor.getCount() != 0){
+    		  cursor.moveToFirst();
+    		  String lastUpdated = cursor.getString(cursor.getColumnIndex(DbHelper.LAST_UPDATED));
+    	  
+    		  if (!lastUpdated.equals(((CitiesDB) result).getLastUpdated())) {
+    			  dbInfoHelper.cleanOldRecords();
+    			  dbInfoHelper.insertCitiesDB((CitiesDB)result);
+    			  dataCity.cleanOldRecords();
+    			  dataCity.insertCitiesDB((CitiesDB)result);
+    		  }
+    	  } else{
+    		  dbInfoHelper.cleanOldRecords();
+			  dbInfoHelper.insertCitiesDB((CitiesDB)result);
+			  dataCity.cleanOldRecords();
+			  dataCity.insertCitiesDB((CitiesDB)result);
+			  Log.i("DEBUG INFO", "update");
+    	  }
+		  Log.i("DEBUG INFO", "Not update");
+    	    
       }
+	}
+	
+	public void setCityDB(){
+		
 	}
 	
 	public void setLoaderCallBack(LoaderCallBack loaderCallBack) {

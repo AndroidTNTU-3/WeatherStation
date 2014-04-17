@@ -9,9 +9,12 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "wbase";
     public static final String CITY_DB_TABLE = "cityDB";
+    public static final String CITY_DB_INFO_TABLE = "cityDbInfo";
     public static final String CITY_TABLE = "city";
     public static final String CURRENT_DAY_TABLE = "currentDay";
     public static final String WEEK_TABLE = "week";
+    
+    public static final String CITY_DB_INFO_VERSION = "cid";
     
     public static final String CITY_DB_ID = "cid";
     public static final String CITY_DB_NAME = "city_name";
@@ -55,6 +58,9 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String HUMIDITY_MAX = "humidityMax";
     public static final String WPI = "wpi";
     
+    public static final String CREATE_DB_INFO_TABLE = "CREATE TABLE IF NOT EXISTS " + CITY_DB_INFO_TABLE
+            + "( _id INTEGER PRIMARY KEY AUTOINCREMENT, " + LAST_UPDATED + " TEXT," + CITY_DB_INFO_VERSION + " TEXT);";
+    
     public static final String CREATE_CITY_DB_TABLE = "CREATE TABLE IF NOT EXISTS " + CITY_DB_TABLE
             + "( _id INTEGER PRIMARY KEY AUTOINCREMENT, " + CITY_DB_ID + " TEXT," + CITY_DB_NAME + " TEXT, "
             + CITY_DB_NAME_EN + " TEXT, " + CITY_DB_REGION + " TEXT, " + CITY_DB_COUNTRY
@@ -86,6 +92,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		db.execSQL(CREATE_DB_INFO_TABLE);
 		db.execSQL(CREATE_CITY_DB_TABLE);
 		db.execSQL(CREATE_CITY_TABLE);
 		db.execSQL(CREATE_DAY_TABLE);
@@ -94,6 +101,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.execSQL("DROP TABLE IF EXISTS " + CREATE_DB_INFO_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + CITY_DB_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + CITY_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + CURRENT_DAY_TABLE);

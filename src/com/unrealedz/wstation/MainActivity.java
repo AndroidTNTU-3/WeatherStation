@@ -1,5 +1,7 @@
 package com.unrealedz.wstation;
 
+import java.io.IOException;
+
 import com.unrealedz.wstation.NetworkLoader.LoaderCallBack;
 import com.unrealedz.wstation.bd.DataDayHelper;
 import com.unrealedz.wstation.bd.DataHelper;
@@ -19,6 +21,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -31,6 +34,7 @@ public class MainActivity extends Activity implements LoaderCallBack, LoaderCall
 	FragmentTransaction fTrans;
 	NetworkLoader nLoader;
 	NetworkLoader cLoader;
+	
 	
 	String url = "http://xml.weather.co.ua/1.2/forecast/23?dayf=5&lang=uk";
 	public static final String CITY_URL = "http://xml.weather.co.ua/1.2/city/?country=804";
@@ -58,7 +62,12 @@ public class MainActivity extends Activity implements LoaderCallBack, LoaderCall
         fTrans.add(R.id.fragInfoUpdate, fragInfo);
         fTrans.commit();
         
+        LocationLoader locationLoader = new LocationLoader(getApplicationContext());
+        
         cityLoad();
+        locationLoader.getLocation();
+        
+        //url = "http://xml.weather.co.ua/1.2/forecast/" + locationLoader.getLocationCode() + "?dayf=5&lang=uk";
                 
         refresh();
         
